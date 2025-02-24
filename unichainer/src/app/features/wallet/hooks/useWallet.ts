@@ -1,4 +1,4 @@
-// app/features/wallet/hooks/useWallet.ts
+// src/app/features/wallet/hooks/useWallet.ts
 
 import { useState, useEffect } from "react";
 import {
@@ -12,10 +12,26 @@ import { unichainSepolia } from "viem/chains";
 import type { Address, Hash, TransactionReceipt } from "viem";
 import { USDC_CONTRACT_ADDRESS, USDC_ABI } from "../constants/contracts";
 
+// Define the chain if it doesn't exist in viem
+const unichainSepoliaConfig = {
+  id: 11155111, // Sepolia Chain ID (Replace with Unichain's specific chain ID if different)
+  name: "Unichain Sepolia",
+  network: "unichainSepolia",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://sepolia.infura.io/v3/"] }, // Replace with actual Unichain RPC if available
+    default: { http: ["https://sepolia.infura.io/v3/"] }, // Replace with actual Unichain RPC if available
+  },
+};
+
 // Create a public client to interact with the blockchain
 const publicClient = createPublicClient({
-  chain: unichainSepolia,
-  transport: http("https://rpc.sepolia.org"),
+  chain: unichainSepoliaConfig,
+  transport: http("https://sepolia.infura.io/v3/"), // Replace with actual Unichain RPC if available
 });
 
 export function useWallet() {
@@ -38,6 +54,9 @@ export function useWallet() {
         );
       }
 
+      // Specifically check for Uniswap wallet
+      const isUniswap = window.ethereum.isUniswap;
+
       // Request account access
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
@@ -49,7 +68,7 @@ export function useWallet() {
 
       // Create wallet client
       const walletClient = createWalletClient({
-        chain: unichainSepolia,
+        chain: unichainSepoliaConfig,
         transport: custom(window.ethereum),
       });
 
@@ -108,7 +127,7 @@ export function useWallet() {
 
       // Create wallet client
       const walletClient = createWalletClient({
-        chain: unichainSepolia,
+        chain: unichainSepoliaConfig,
         transport: custom(window.ethereum),
       });
 
